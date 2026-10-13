@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mlbench-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: mlbench
+      POSTGRES_PASSWORD: mlbench_secret_password
+      POSTGRES_DB: mlbench_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mlbench -d mlbench_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mlbench-backend
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://mlbench:mlbench_secret_password@db:5432/mlbench_db
+      ENVIRONMENT: production
+      DEBUG: "False"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./sample_data:/app/sample_data
+      - ./reports:/app/reports
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mlbench-frontend
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

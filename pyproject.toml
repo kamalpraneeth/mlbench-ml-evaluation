@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlbench"
+version = "1.0.0"
+description = "Cross-Framework Model Evaluation & Benchmarking Platform"
+readme = "README.md"
+authors = [{ name = "Kamal Praneeth" }]
+license = { text = "MIT" }
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
+    "pydantic>=2.8.0",
+    "pydantic-settings>=2.4.0",
+    "sqlalchemy>=2.0.30",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "scikit-learn>=1.5.0",
+    "torch>=2.4.0",
+    "onnx>=1.16.0",
+    "onnxruntime>=1.18.0",
+    "onnxscript>=0.1.0",
+    "psutil>=6.0.0",
+    "pytest>=8.2.0",
+    "httpx>=0.27.0",
+    "joblib>=1.4.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+python_files = ["test_*.py"]
+addopts = "-v"
